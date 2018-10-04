@@ -12,14 +12,17 @@ Check out [here](https://github.com/ian952/diffspec/blob/master/diffspec) for th
 ./udiffspec -o <program> -O <sample> [options]
 ```
 
-`-v` - Verbose mode
+`-v` - Enable verbose mode
 
-`-i` - Test file/directory
+`-f` - Enable input file mode
 
-`-a` - Custom args
+`-i <test-file/dir>` - Test file/directory
+
+`-a <args>` - Custom args
 
 - If no testname is specified, all tests under specs/ will be ran.
 
+---
 
 Creds to [Ian Hu](https://github.com/ian952), [Denton Liu](https://github.com/Denton-L), 
 and CS 247 TA for providing the code for diffspec

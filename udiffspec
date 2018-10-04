@@ -19,15 +19,18 @@ verbose=0
 FILEIN=0
 
 print_usage() {
+    echo ""
     echo "----------------Usage---------------"
     echo ""
     echo "diffspec -o <program> -O <sample> [options]"
     echo ""
     echo "-v Verbose mode"
     echo "-i <test-file/dir>"
-    echo "-a <custom args>"
+    echo "-a <custom-args>"
+    echo "-f <use-file-input>"
     echo ""
     echo "------------------------------------"
+    echo ""
 }
 
 while getopts i:a:o:O:hvf opt; do
@@ -60,6 +63,19 @@ while getopts i:a:o:O:hvf opt; do
 done
 
 passed=1
+
+if [ ! -x "$prog" ]; then
+    echo "Executable $prog does not exist or is not executable" >&2
+    print_usage
+    exit 1
+fi
+
+if [ ! -x "$prov" ]; then
+    echo "Executable $prov does not exist or is not executable" >&2
+    print_usage
+    exit 1
+fi
+
 if [ -z "$INPUT" ]; then
     INPUT="specs"
 fi
@@ -77,16 +93,6 @@ if [ -d "$INPUT" ]; then
 else
     echo "Running single test" >&2
     tests="$INPUT"
-fi
-
-if [ ! -x "$prog" ]; then
-    echo "Executable $prog does not exist or is not executable" >&2
-    exit 1
-fi
-
-if [ ! -x "$prov" ]; then
-    echo "Executable $prov does not exist or is not executable" >&2
-    exit 1
 fi
 
 print_output() {

@@ -1,0 +1,139 @@
+#!/usr/bin/env bash
+# This is intended as an improvement on the work done by diffspec, to make it a bleeding
+# edge technology just like ucpp (lol)
+
+# Check out: https://github.com/ian952/diffspec/blob/master/diffspec
+
+# Usage: diffspec -o <program> -O <sample> [options]
+# You can use the -i option to specify a custom test file
+# If no testname is specified, all tests under specs/ will be ran.
+# Use -v to turn on verbose mode. Output will be printed for passing tests as well.
+
+# Creds to Ian Hu, Denton Liu, and CS 247 TA for providing the code for diffspec!!!
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
+verbose=0
+FILEIN=0
+
+print_usage() {
+    echo "----------------Usage---------------"
+    echo ""
+    echo "diffspec -o <program> -O <sample> [options]"
+    echo ""
+    echo "-v Verbose mode"
+    echo "-i <test-file/dir>"
+    echo "-a <custom args>"
+    echo ""
+    echo "------------------------------------"
+}
+
+while getopts i:a:o:O:hvf opt; do
+    case $opt in
+        a)
+            ARGS=${OPTARG}
+            ;;
+        v)
+            verbose=1
+            ;;
+        o)
+            prog=${OPTARG}
+            ;;
+        O)
+            prov=${OPTARG}
+            ;;
+        i)
+            INPUT=${OPTARG}
+            ;;
+        h)
+            print_usage
+            ;;
+        f)
+            FILEIN=1
+            ;;
+        \?)
+            echo "Invalid option: -$OPTARG"
+            ;;
+    esac
+done
+
+passed=1
+if [ -z "$INPUT" ]; then
+    INPUT="specs"
+fi
+
+if [ -d "$INPUT" ]; then
+    echo "Running all tests in directory: $INPUT" >&2
+    # TODO: handle spaces properly
+
+    subdircount=`find $INPUT/* -maxdepth 1 -type d | wc -l`
+    if [ $subdircount -eq 0 ]; then
+        tests="$(ls $INPUT/*.in)"
+    else
+        tests="$(ls $INPUT/*.in specs/**/*.in)"
+    fi
+else
+    echo "Running single test" >&2
+    tests="$INPUT"
+fi
+
+if [ ! -x "$prog" ]; then
+    echo "Executable $prog does not exist or is not executable" >&2
+    exit 1
+fi
+
+if [ ! -x "$prov" ]; then
+    echo "Executable $prov does not exist or is not executable" >&2
+    exit 1
+fi
+
+print_output() {
+    echo "Input:"
+    cat "$infile"
+    echo -e "\n${GREEN}Expected output:"
+    cat "$provfile"
+    echo -e "\n${RED}Actual output:"
+    cat "$outfile"
+}
+
+for test in $tests; do
+    echo $test
+    echo $FILEIN
+    infile="$test"
+    outfile=$(mktemp)
+    provfile=$(mktemp)
+    if [ ! -r "$infile" ]; then
+        echo "File $infile does not exist or is not readable" >&2
+        exit 1
+    fi
+    if [[ $FILEIN -eq 1 ]]; then
+        ./$prog $infile &> $outfile
+        ./$prov $infile &> $provfile
+    else
+        ./$prog < "$infile" &> "$outfile"
+        ./$prov < "$infile" &> "$provfile"
+    fi
+    diffRes=$(diff -u "$provfile" "$outfile")
+    if [ "$diffRes" != "" ]; then
+        passed=0
+        echo -e "${RED}Fail: $test\n"
+        print_output
+        echo -e "\n\nDiff:"
+        echo -e "${diffRes}"
+        echo -e "${NC}"
+    else
+        echo -e "${GREEN}Pass: $test${NC}"
+        if [[ $verbose -eq 1 ]]; then
+            print_output
+        fi
+    fi
+
+    rm "$outfile"
+    rm "$provfile"
+done
+
+if [ "$passed" = 1 ]; then
+    echo -e "\n✅ ${GREEN} All tests passed${NC} 💯"
+fi

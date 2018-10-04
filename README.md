@@ -1,1 +1,23 @@
-# udiffspec
+# uDiffspec
+
+Test case automation for CS 343
+
+This is intended as an improvement on the work done by diffspec, to make it a bleeding
+edge technology just like ucpp (lol).
+
+Check out [here](https://github.com/ian952/diffspec/blob/master/diffspec) for the original diffspec
+
+### Usage
+```
+diffspec -o <program> -O <sample> [options]
+```
+
+`-v` - Verbose mode"
+`-i` - Test file/directory
+`-a` - Custom args
+
+- If no testname is specified, all tests under specs/ will be ran.
+
+- Creds to [Ian Hu](https://github.com/ian952), [Denton Liu](https://github.com/Denton-L), 
+and CS 247 TA for providing the code for diffspec
+

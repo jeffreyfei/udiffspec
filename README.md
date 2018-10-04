@@ -12,12 +12,16 @@ Check out [here](https://github.com/ian952/diffspec/blob/master/diffspec) for th
 diffspec -o <program> -O <sample> [options]
 ```
 
-`-v` - Verbose mode"
+`-v` - Verbose mode
+
 `-i` - Test file/directory
+
 `-a` - Custom args
 
 - If no testname is specified, all tests under specs/ will be ran.
 
-- Creds to [Ian Hu](https://github.com/ian952), [Denton Liu](https://github.com/Denton-L), 
+
+Creds to [Ian Hu](https://github.com/ian952), [Denton Liu](https://github.com/Denton-L), 
 and CS 247 TA for providing the code for diffspec
 
+Feel free to contribute if you need more features!

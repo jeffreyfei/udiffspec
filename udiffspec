@@ -4,7 +4,7 @@
 
 # Check out: https://github.com/ian952/diffspec/blob/master/diffspec
 
-# Usage: diffspec -o <program> -O <sample> [options]
+# Usage: udiffspec -o <program> -O <sample> [options]
 # You can use the -i option to specify a custom test file
 # If no testname is specified, all tests under specs/ will be ran.
 # Use -v to turn on verbose mode. Output will be printed for passing tests as well.
@@ -109,11 +109,11 @@ for test in $tests; do
         exit 1
     fi
     if [[ $FILEIN -eq 1 ]]; then
-        ./$prog $infile &> $outfile
-        ./$prov $infile &> $provfile
+        ./$prog $infile $ARGS &> $outfile
+        ./$prov $infile $ARGS &> $provfile
     else
-        ./$prog < "$infile" &> "$outfile"
-        ./$prov < "$infile" &> "$provfile"
+        ./$prog $ARGS < "$infile" &> "$outfile"
+        ./$prov $ARGS < "$infile" &> "$provfile"
     fi
     diffRes=$(diff -u "$provfile" "$outfile")
     if [ "$diffRes" != "" ]; then

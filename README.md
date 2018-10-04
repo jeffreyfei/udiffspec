@@ -9,7 +9,7 @@ Check out [here](https://github.com/ian952/diffspec/blob/master/diffspec) for th
 
 ### Usage
 ```
-diffspec -o <program> -O <sample> [options]
+./udiffspec -o <program> -O <sample> [options]
 ```
 
 `-v` - Verbose mode

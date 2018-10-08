@@ -14,7 +14,7 @@ Check out [here](https://github.com/ian952/diffspec/blob/master/diffspec) for th
 
 `-v` - Enable verbose mode
 
-`-f` - Enable input file mode
+`-m` - Input mode "std|arg|file"
 
 `-i <test-file/dir>` - Test file/directory
 

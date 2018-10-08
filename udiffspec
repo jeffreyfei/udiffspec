@@ -16,7 +16,7 @@ GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
 verbose=0
-FILEIN=0
+INPUTMODE="std"
 
 print_usage() {
     echo ""
@@ -27,13 +27,13 @@ print_usage() {
     echo "-v Verbose mode"
     echo "-i <test-file/dir>"
     echo "-a <custom-args>"
-    echo "-f <use-file-input>"
+    echo "-m <std|file|arg>"
     echo ""
     echo "------------------------------------"
     echo ""
 }
 
-while getopts i:a:o:O:hvf opt; do
+while getopts i:a:o:O:m:hv opt; do
     case $opt in
         a)
             ARGS=${OPTARG}
@@ -53,8 +53,13 @@ while getopts i:a:o:O:hvf opt; do
         h)
             print_usage
             ;;
-        f)
-            FILEIN=1
+        m)
+            INPUTMODE=${OPTARG}
+            if [ "$INPUTMODE" != "file" ] && [ "$INPUTMODE" != "std" ] && [ "$INPUTMODE" != "arg" ]; then
+                print_usage
+                exit 1
+            fi
+            echo "Test mode: $INPUTMODE"
             ;;
         \?)
             echo "Invalid option: -$OPTARG"
@@ -105,8 +110,6 @@ print_output() {
 }
 
 for test in $tests; do
-    echo $test
-    echo $FILEIN
     infile="$test"
     outfile=$(mktemp)
     provfile=$(mktemp)
@@ -114,9 +117,12 @@ for test in $tests; do
         echo "File $infile does not exist or is not readable" >&2
         exit 1
     fi
-    if [[ $FILEIN -eq 1 ]]; then
+    if [[ "$INPUTMODE" = "file" ]]; then
         ./$prog $infile $ARGS &> $outfile
         ./$prov $infile $ARGS &> $provfile
+    elif [ "$INPUTMODE" = "arg" ]; then
+        ./$prog $ARGS $(cat $test) &> $outfile
+        ./$prov $ARGS $(cat $test) &> $provfile
     else
         ./$prog $ARGS < "$infile" &> "$outfile"
         ./$prov $ARGS < "$infile" &> "$provfile"
